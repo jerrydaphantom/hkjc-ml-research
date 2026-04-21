@@ -1,0 +1,15 @@
+model_family,model_variant,model_key,source_file,log_loss,brier_score,top_pick_win_rate,winner_in_top3_rate,rank_log_loss,rank_brier_score,rank_top_pick_win_rate,rank_winner_in_top3_rate,rank_mean
+catboost,market_aware,catboost::market_aware,baseline_metrics_catboost_v2.csv,0.2353981642887948,0.0656850829858861,0.3269927536231884,0.6213768115942029,1.0,1.0,1.0,3.0,1.5
+lightgbm,market_aware,lightgbm::market_aware,baseline_metrics_lgbm_v2.csv,0.2356660969770205,0.0658093416127617,0.3233695652173913,0.6141304347826086,2.0,2.0,2.0,4.0,2.5
+logreg_lbfgs,market_aware,logreg_lbfgs::market_aware,baseline_metrics_v2.csv,0.235710353526967,0.0658427959752892,0.3125,0.6277173913043478,3.0,3.0,4.0,1.0,2.75
+logreg_alt_solver,market_aware__saga,logreg_alt_solver::market_aware__saga,baseline_metrics_alt_solver_v2.csv,0.2357307050967189,0.0659198173302805,0.3115942028985507,0.6259057971014492,4.0,4.0,5.0,2.0,3.75
+logreg_alt_solver,market_aware__liblinear,logreg_alt_solver::market_aware__liblinear,baseline_metrics_alt_solver_v2.csv,0.2357416278417227,0.0659245315631378,0.3106884057971014,0.6259057971014492,5.0,5.0,6.0,2.0,4.5
+logreg_stable,market_aware,logreg_stable::market_aware,baseline_metrics_v3.csv,0.2357837868508074,0.0659307211996873,0.3097826086956521,0.6277173913043478,6.0,6.0,7.0,1.0,5.0
+logreg_alt_solver,market_free__saga,logreg_alt_solver::market_free__saga,baseline_metrics_alt_solver_v2.csv,0.2578414341959942,0.0704725900844701,0.2509057971014493,0.5144927536231884,8.0,9.0,9.0,6.0,8.0
+logreg_alt_solver,market_free__liblinear,logreg_alt_solver::market_free__liblinear,baseline_metrics_alt_solver_v2.csv,0.2578518386222257,0.0704767052931647,0.2509057971014493,0.5144927536231884,9.0,10.0,9.0,6.0,8.5
+random_forest,market_aware,random_forest::market_aware,baseline_metrics_rf_v2.csv,0.3813358864363236,0.1138401884518606,0.3215579710144927,0.6077898550724637,13.0,13.0,3.0,5.0,8.5
+lightgbm,market_free,lightgbm::market_free,baseline_metrics_lgbm_v2.csv,0.257307245145749,0.0702742887077172,0.2382246376811594,0.5081521739130435,7.0,7.0,12.0,9.0,8.75
+logreg_stable,market_free,logreg_stable::market_free,baseline_metrics_v3.csv,0.2579182004157151,0.0704877426665821,0.2527173913043478,0.5144927536231884,11.0,11.0,8.0,6.0,9.0
+catboost,market_free,catboost::market_free,baseline_metrics_catboost_v2.csv,0.2578764439820185,0.0704129884016484,0.2373188405797101,0.5126811594202898,10.0,8.0,13.0,7.0,9.5
+logreg_lbfgs,market_free,logreg_lbfgs::market_free,baseline_metrics_v2.csv,0.2582709344105793,0.0705392885303658,0.2490942028985507,0.5126811594202898,12.0,12.0,10.0,7.0,10.25
+random_forest,market_free,random_forest::market_free,baseline_metrics_rf_v2.csv,0.4232918561325915,0.1270978939411025,0.2391304347826087,0.509963768115942,14.0,14.0,11.0,8.0,11.75
