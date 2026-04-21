@@ -1,22 +1,16 @@
-# Python cache
 __pycache__/
 *.py[cod]
 
-# Virtual environment
 .venv/
 venv/
 env/
 
-# Jupyter
 .ipynb_checkpoints/
 
-# macOS
 .DS_Store
 
-# VS Code
 .vscode/
 
-# Data files you do not want public
 data/raw/
 data/interim/
 data/models/
