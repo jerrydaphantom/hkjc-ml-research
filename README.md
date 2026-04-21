@@ -147,7 +147,7 @@ Calibration improved proper-scoring performance modestly and produced cleaner ra
 
 ## Strategy Research Findings
 
-It is obvious that **predictive accuracy does not automatically imply profitability** due to varying dividends.
+It is obvious that **predictive accuracy does not automatically imply profitability**, especially in a pari-mutuel market where price matters as much as hit rate.
 
 When betting every model top pick from the shortlisted market-aware pipelines, results remained negative on the test set:
 
@@ -166,24 +166,17 @@ However, more selective offline filters produced attractive-looking backtest poc
 | Logistic Regression + raw_race_norm + top_pick_ev_ge_0_10 | 17 | 29.4% | 16.5% |
 | LightGBM + raw_race_norm + top_pick_ev_ge_0_10 | 70 | 32.9% | 7.9% |
 
-These results are promising as **research signals**, but...
+These results are promising as **research signals**, but they should not be interpreted as proof of a deployable live edge.
 
 ## Core Bottleneck
 
-HKJC uses a pari-mutuel betting system, that is, the final odds are not fully known at the exact moment the bet must be placed. A large proportion of bets can flow in during the last minute of betting, leading to fluctuation live odds. We have seen that odds carry strong signals. The strongest model and the strongest selective strategy variants both depend on odds-derived information.
+HKJC uses a pari-mutuel betting system, meaning the final odds are not fully known at the exact moment a bet must be placed. A large share of betting volume can arrive very late, which causes meaningful movement in the live odds close to pool closure.
 
-Even if we can predict the final odds, the next question is if we are able to execute the strategy before the pool closes. 
+This matters because the strongest model and the most attractive selective strategy variants both depend on odds-derived information. The offline research results therefore do not map cleanly into a live executable strategy.
 
-## Why This Matters
+Even if the final odds could be forecast in advance, a second challenge remains: whether the model output can be processed and acted on quickly enough before the pool closes.
 
-The work began as a scraping + ML + backtesting problem, but the most important insight is now about:
-
-- data timing,
-- market microstructure,
-- pre-off odds observability,
-- and real-time execution.
-
-I came to the realization that a quantitative research pipeline can discover that **the real constraint is data and implementation, not model complexity**.
+This matters as **the real constraint is data and implementation, not model complexity**.
 
 ## Current Limitations
 
@@ -192,16 +185,16 @@ I came to the realization that a quantitative research pipeline can discover tha
 - The current research pipeline is batch-oriented rather than a production real-time inference system.
 - Some historical-feature timing choices are acceptable for research, but would need to be tightened further for a stricter live-trading style setup.
 
-## Possible Next Steps
+## Next Steps
 
 There are several realistic continuation paths:
 
 1. **Pre-off live-odds collection**  
-   Build or source a fresh stream of timestamped live odds so that decisions can be evaluated using information actually available before race start. However, HKJC does not have an archive of historical live odds, which means the data will have to be collected in real time. Someone has collected historical live odds for 2 seasons starting in 2016, but I think the data is too dated to be used in current times. Also, there are local data brokers selling such data, but I am undecided on making such an investment. 
+   Build or source a fresh stream of timestamped live odds so decisions can be evaluated using information that is actually available before race start. HKJC does not provide a historical archive of live odds, so this data would need to be collected prospectively or sourced externally.
 
 2. **Final-odds forecasting layer**  
-   Train a time series model that maps earlier market snapshots to estimated final odds, then feed those estimated odds into the market-aware research framework. Similarly, the problem boils down to sourcing the data. 
-
+   Train a time-series model that maps earlier market snapshots to estimated final odds, then feed those estimated odds into the market-aware research framework. The main challenge here is still data availability rather than model design.
+   
 3. **Stricter ex-ante pipeline**  
    Refine feature timing so the entire workflow is closer to a true pre-race deployment setup.
 
@@ -252,8 +245,4 @@ A simple way to navigate the project is:
 5. **Model-vs-market and backtest scripts**  
    Study how calibrated model probabilities relate to tote-market prices and simple offline decision rules.
 
-## Notes
-
-- The private scraper and raw data pipeline are intentionally excluded.
-- The public repository is meant to showcase the **research system** and the **main findings**.
-- This project is presented as a quantitative research workflow, not as financial or betting advice.
+Feel free to let me know your thoughts and insights. :)
