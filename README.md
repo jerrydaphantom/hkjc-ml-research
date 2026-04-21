@@ -246,3 +246,5 @@ A simple way to navigate the project is:
    Study how calibrated model probabilities relate to tote-market prices and simple offline decision rules.
 
 Feel free to let me know your thoughts and insights. :)
+
+**Project links:** [View repository code](https://github.com/jerrydaphantom/hkjc-ml-research) | [View project page](https://jerrydaphantom.github.io/hkjc-ml-research/)
