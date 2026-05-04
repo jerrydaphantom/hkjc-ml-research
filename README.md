@@ -353,4 +353,10 @@ This project is for research and educational purposes only.
 
 Feel free to let me know your thoughts and insights. :)
 
+## License
+
+This repository’s code is released under the MIT License. See [`LICENSE`](LICENSE).
+
+This repository does not redistribute raw Hong Kong Jockey Club data. Any third-party data remains subject to the terms of the original data provider. The project is intended for research, education, and portfolio demonstration purposes.
+
 **Project links:** [View repository code](https://github.com/jerrydaphantom/hkjc-ml-research) | [View project page](https://jerrydaphantom.github.io/hkjc-ml-research/)
