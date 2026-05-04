@@ -1,21 +1,39 @@
+# Python
 __pycache__/
 *.py[cod]
-
+*.pyo
+*.pyd
 .venv/
 venv/
 env/
 
+# Jupyter
 .ipynb_checkpoints/
 
+# OS / editor
 .DS_Store
-
+Thumbs.db
 .vscode/
+.idea/
 
-data/raw/
-data/interim/
-data/models/
-data/*.db
+# Local/private data and large artifacts
 *.db
+*.sqlite
+*.sqlite3
+*.parquet
+*.feather
+*.joblib
+*.pkl
+*.pickle
+*.html
+*.jsonl
 
-# Logs
+# Private project folders
+data/
+raw/
+interim/
+models/
+outputs/
+
+# Local experiment notes
 *.log
