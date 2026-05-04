@@ -32,7 +32,7 @@ It includes:
 - model-vs-market comparison,
 - and offline strategy research.
 
-It does **not** include the private scraper, raw HTML archive, or full database-refresh pipeline. The private scraper can collect HKJC result pages that remain publicly available online, with historical coverage extending back to **1979-12-01**.
+It does **not** include the private scraper, raw HTML archive, or full database-refresh pipeline.
 
 ## Pipeline
 
@@ -109,6 +109,8 @@ Raw model probabilities are further calibrated using:
 - isotonic calibration,
 - and race-normalized variants.
 
+For the race-normalized variants, each horse's calibrated probability is divided by the sum of the calibrated probabilities for all horses in the same race. This creates race-level probability vectors that sum to approximately one.
+
 Model-method combinations are ranked using proper scoring rules such as **log loss** and **Brier score**, along with race-level ranking metrics.
 
 ## Main Results
@@ -168,6 +170,80 @@ However, more selective offline filters produced attractive-looking backtest poc
 
 These results are promising as **research signals**, but they should not be interpreted as proof of a deployable live edge.
 
+## Threshold Diagnostic Visuals
+
+To better understand where model-vs-market disagreement becomes useful, I also tested threshold rules across two dimensions:
+
+- **EV threshold**: minimum model-implied expected net profit per unit
+- **Probability-gap threshold**: minimum difference between model win probability and market-implied probability
+
+The following figures focus on the strongest calibrated model-method combination:
+
+**CatBoost market-aware + sigmoid calibration + race normalization**
+
+### ROI surface
+
+The 3D surface shows realized ROI across the threshold grid. Green regions indicate positive realized profit per unit, while red regions indicate negative realized profit per unit.
+
+![CatBoost ROI surface](figures/threshold_diagnostics/catboost_roi_surface.png)
+
+### ROI heatmap with selection-count contours
+
+The heatmap gives a clearer view of the same ROI landscape. Black contour lines show approximate selection counts, which helps separate high-ROI regions with reasonable sample support from very small-sample regions.
+
+![CatBoost ROI heatmap](figures/threshold_diagnostics/catboost_roi_heatmap.png)
+
+### Sharpe-like risk-adjusted performance
+
+The Sharpe-like score is calculated as:
+
+```text
+average realized profit per unit / standard deviation of realized profit per unit
+```
+
+This is not a formal financial Sharpe ratio, but it is useful for comparing average profit against realized volatility.
+
+![CatBoost Sharpe-like heatmap](figures/threshold_diagnostics/catboost_sharpe_like_heatmap.png)
+
+### Selection count
+
+Selection count falls quickly as thresholds become stricter. This matters because very high ROI from only a few selections may not be reliable.
+
+![CatBoost log-selection-count heatmap](figures/threshold_diagnostics/catboost_log_selection_count_heatmap.png)
+
+### Cumulative profit by threshold rule
+
+The loose baseline rule loses heavily, while the more selective threshold candidates show positive retrospective performance over the test period.
+
+![CatBoost threshold cumulative profit](figures/threshold_diagnostics/catboost_strategy_cumulative_profit.png)
+
+### Cross-model balanced threshold candidates
+
+This plot compares balanced retrospective threshold candidates from CatBoost, LightGBM, and Logistic Regression. These are not ensemble results; they are side-by-side strategy candidates selected from each model family.
+
+![Cross-model balanced threshold cumulative profit](figures/threshold_diagnostics/cross_model_balanced_strategies_cumulative_profit.png)
+
+### Theoretical rebate scenario
+
+The project also includes a theoretical 10% loss-rebate scenario. This assumes losing selections receive a 10% stake rebate and ignores pari-mutuel price impact from placing larger stakes.
+
+This is a sensitivity analysis, not a live-executable claim.
+
+![CatBoost theoretical rebate ROI heatmap](figures/threshold_diagnostics/catboost_theoretical_rebate_roi_heatmap.png)
+
+### Example threshold candidates
+
+The threshold diagnostics produced the following retrospective candidates:
+
+| Model | Rule Type | EV Threshold | Probability-Gap Threshold | Selections | ROI | Theoretical Rebate ROI | Sharpe-like |
+|---|---|---:|---:|---:|---:|---:|---:|
+| CatBoost market-aware + sigmoid_race_norm | Balanced | 0.010 | 0.0850 | 106 | 40.66% | 47.55% | 0.168 |
+| CatBoost market-aware + sigmoid_race_norm | Higher ROI | 0.020 | 0.0900 | 79 | 57.72% | 64.18% | 0.233 |
+| LightGBM market-aware + raw_race_norm | Balanced | 0.180 | 0.0450 | 100 | 22.20% | 30.30% | 0.074 |
+| Logistic Regression market-aware + raw_race_norm | Balanced | 0.080 | 0.0725 | 105 | 52.76% | 60.57% | 0.167 |
+
+These are **retrospective threshold candidates** chosen from historical test-set diagnostics. They should not be read as production-ready rules.
+
 ## Core Bottleneck
 
 HKJC uses a pari-mutuel betting system, meaning the final odds are not fully known at the exact moment a bet must be placed. A large share of betting volume can arrive very late, which causes meaningful movement in the live odds close to pool closure.
@@ -182,7 +258,9 @@ This matters as **the real constraint is data and implementation, not model comp
 
 - The strongest workflows are market-aware and therefore sensitive to decision-time odds availability.
 - Offline ROI pockets rely on odds-based selection filters that may not be stable live.
+- Threshold candidates were selected retrospectively from historical diagnostics.
 - The current research pipeline is batch-oriented rather than a production real-time inference system.
+- The theoretical rebate analysis ignores pari-mutuel price impact.
 - Some historical-feature timing choices are acceptable for research, but would need to be tightened further for a stricter live-trading style setup.
 
 ## Next Steps
@@ -195,10 +273,13 @@ There are several realistic continuation paths:
 2. **Final-odds forecasting layer**  
    Train a time-series model that maps earlier market snapshots to estimated final odds, then feed those estimated odds into the market-aware research framework. The main challenge here is still data availability rather than model design.
    
-3. **Stricter ex-ante pipeline**  
+3. **Out-of-sample threshold validation**  
+   Freeze candidate threshold rules and evaluate them on future races rather than selecting thresholds retrospectively.
+
+4. **Stricter ex-ante pipeline**  
    Refine feature timing so the entire workflow is closer to a true pre-race deployment setup.
 
-4. **Real-time execution prototype**  
+5. **Real-time execution prototype**  
    Add live data ingestion, real-time feature generation, inference, candidate selection, and cutoff-aware execution logic.
 
 ## Public Repository Structure
@@ -208,6 +289,7 @@ hkjc-ml-research/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
+├── PUBLIC_FILE_RENAMING_GUIDE.md
 ├── scripts/
 │   ├── build_modeling_table.py
 │   ├── build_historical_features.py
@@ -219,11 +301,20 @@ hkjc-ml-research/
 │   ├── calibrate_probabilities.py
 │   ├── compare_model_vs_market.py
 │   └── backtest_top_runner_strategy.py
-└── results/
-    ├── baseline_model_test_ranking.csv
-    ├── calibrated_probability_test_ranking.csv
-    ├── top_runner_strategy_summary.csv
-    └── model_market_threshold_summary.csv
+├── results/
+│   ├── baseline_model_test_ranking.csv
+│   ├── calibrated_probability_test_ranking.csv
+│   ├── top_runner_strategy_summary.csv
+│   └── model_market_threshold_summary.csv
+└── figures/
+    └── threshold_diagnostics/
+        ├── catboost_roi_surface.png
+        ├── catboost_roi_heatmap.png
+        ├── catboost_sharpe_like_heatmap.png
+        ├── catboost_log_selection_count_heatmap.png
+        ├── catboost_strategy_cumulative_profit.png
+        ├── cross_model_balanced_strategies_cumulative_profit.png
+        └── catboost_theoretical_rebate_roi_heatmap.png
 ```
 
 ## How to Read This Repository
@@ -244,6 +335,21 @@ A simple way to navigate the project is:
 
 5. **Model-vs-market and backtest scripts**  
    Study how calibrated model probabilities relate to tote-market prices and simple offline decision rules.
+
+6. **Threshold diagnostic figures**  
+   Use the heatmaps and cumulative-profit plots to understand where model-vs-market disagreement becomes more useful.
+
+## Installation
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Disclaimer
+
+This project is for research and educational purposes only.
 
 Feel free to let me know your thoughts and insights. :)
 
