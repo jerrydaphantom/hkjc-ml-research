@@ -10,7 +10,7 @@ On the surface, there are two parts that contribute to the difficulty. The first
 
 But that is also what intrigued me.
 
-I wanted to work on something that was difficult enough to be a real intellectual challenge, something to brainstorm at night. At the same time, horse racing felt niche enough that it was not completely impossible to approach. Compared to analysing stocks, it felt more contained, more unusual, and maybe just plausible enough that a working strategy could exist. I know that there have been people who studied racing seriously and were successful at it.
+I wanted to work on something that was difficult enough to be a real intellectual challenge, something to brainstorm at night. At the same time, horse racing felt niche enough that it was not completely impossible to approach. Compared to analysing stocks, it felt more contained, more unusual, and maybe just plausible enough that a working strategy could exist. I know that there have been people who studied racing seriously and were successful at it - Steven Brecher's "Beating the Races with a Computer" was a great inspiration.
 
 And there is the thrill factor. With stocks, the average annual return is usually discussed in percentages over a long period of time. With horse racing, the result is much more immediate and much more unforgiving. A well-informed bet can still go to zero, but calling correctly on an under-bet horse can return many times the original stake in just a couple of minutes.
 
@@ -177,16 +177,7 @@ When betting every model top pick from the shortlisted market-aware pipelines, r
 | LightGBM market-aware + raw_race_norm + top_pick_all | -9.00% |
 | Logistic Regression market-aware + raw_race_norm + top_pick_all | -15.06% |
 
-However, more selective offline filters produced attractive-looking backtest pockets. Examples include:
-
-| Strategy | Selections | Hit Rate | ROI |
-|---|---:|---:|---:|
-| CatBoost + sigmoid_race_norm + top_pick_ev_ge_0_05 | 20 | 40.0% | 51.5% |
-| CatBoost + sigmoid_race_norm + top_pick_ev_ge_0 | 62 | 38.7% | 29.7% |
-| Logistic Regression + raw_race_norm + top_pick_ev_ge_0_10 | 17 | 29.4% | 16.5% |
-| LightGBM + raw_race_norm + top_pick_ev_ge_0_10 | 70 | 32.9% | 7.9% |
-
-These results are promising as **research signals**, but they should not be interpreted as proof of a deployable live edge.
+This top-pick baseline shows that ranking accuracy alone is not enough. This motivated a second-stage model-vs-market analysis. 
 
 ## Threshold Diagnostic Visuals
 
@@ -298,7 +289,10 @@ There are several realistic continuation paths:
    Add live data ingestion, real-time feature generation, inference, candidate selection, and cutoff-aware execution logic.
 
 5. **Bet size optimization**  
-   Implement Kelly Criterion adjustments to bet size: current scheme assumes same stakes for every selection. 
+   Implement Kelly Criterion adjustments to bet size: current scheme assumes same stakes for every selection.
+
+6. **Refine race-row/runner-row features**  
+   Add features like horse age, colour, country of origin, gear/equipment change - previous research have shown that these have correlation to performance. Can also analyse sectional times.
 
 ## Public Repository Structure
 
