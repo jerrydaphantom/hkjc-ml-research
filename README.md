@@ -1,5 +1,23 @@
 # HKJC Race Outcome Modeling: Chronological ML, Probability Calibration, and Market-Aware Strategy Research
 
+## Foreword
+
+You might be wondering why I chose to tackle the problem of horse racing, and that is a very valid question. 
+
+Horse racing is no more stochastic than, say, stocks or the weather.
+
+On the surface, there are two parts that contribute to the difficulty. The first is predicting the race results. With a plethora of variables related to the horses, jockeys, trainers, weather, track conditions, and so on, there is a lot in play. The second is figuring out whether those predictions can be turned into a strategy that is actually profitable and sustainable, not just something that looks good on paper.
+
+But that is also what intrigued me.
+
+I wanted to work on something that was difficult enough to be a real intellectual challenge, something to brainstorm at night. At the same time, horse racing felt niche enough that it was not completely impossible to approach. Compared to analysing stocks, it felt more contained, more unusual, and maybe just plausible enough that a working strategy could exist. I know that there have been people who studied racing seriously and were successful at it.
+
+And there is the thrill factor. With stocks, the average annual return is usually discussed in percentages over a long period of time. With horse racing, the result is much more immediate and much more unforgiving. A well-informed bet can still go to zero, but calling correctly on an under-bet horse can return many times the original stake in just a couple of minutes.
+
+When I first started, I thought this would mostly be a machine-learning project, but as I worked on it, I realised that the model was only one part of the problem: figuring out how to obtain the data, how to engineer the scraper, how to store such a large amount of it, how to clean it, how to deal with exceptions, and how to decide what variables should even go into the machine in the first place.
+
+So in the end, this project became much more than just trying to predict horse races. It became a way for me to take an idea that sounded slightly absurd at first, break it down, engineer, and see how far I could push it.
+
 ## Overview
 
 Play responsibly. Gamble at your own risk.
@@ -273,14 +291,14 @@ There are several realistic continuation paths:
 2. **Final-odds forecasting layer**  
    Train a time-series model that maps earlier market snapshots to estimated final odds, then feed those estimated odds into the market-aware research framework. The main challenge here is still data availability rather than model design.
    
-3. **Out-of-sample threshold validation**  
+3. **Out-of-sample threshold validation**
    Freeze candidate threshold rules and evaluate them on future races rather than selecting thresholds retrospectively.
 
-4. **Stricter ex-ante pipeline**  
-   Refine feature timing so the entire workflow is closer to a true pre-race deployment setup.
-
-5. **Real-time execution prototype**  
+4. **Real-time execution prototype**  
    Add live data ingestion, real-time feature generation, inference, candidate selection, and cutoff-aware execution logic.
+
+5. **Bet size optimization**  
+   Implement Kelly Criterion adjustments to bet size: current scheme assumes same stakes for every selection. 
 
 ## Public Repository Structure
 
